@@ -28,6 +28,8 @@ This directory contains the default classes and methods used by the framework.
 You must change the variable `env_global_name` defined in `project/default/__init__.py`.
 It is the name of the global variable used in the framework to figure out the home directory of the project.
 
+If you have more than one database, you will need to add it in `get_socket_path` file `project/default/helpers.py`.
+
 You probably don't want to change anything else in it.
 If you do so, it will also make updating the framework easier.
 If you feel something should be added, you may want to do a PR on this repository.
