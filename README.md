@@ -52,7 +52,7 @@ Contains the redis config file and the start/stop script for the cache database 
 
 ## `etc` directory
 
-Contains templates for systemd services, how to set them up is explained in the files themselves
+Contains templates for systemd services, how to set them up is explained in the files themselves. You also need to rename the process file name to the name you use in `config/generic.json.sample`.
 
 ## `tools` directory
 
