@@ -28,6 +28,16 @@ jobs:
         poetry install
         echo PROJECTNAME_HOME=`pwd` > .env
 
+    - name: Install redis
+      run: |
+        pushd ..
+        git clone https://github.com/antirez/redis.git
+        pushd redis
+        git checkout 6.2
+        make
+        popd
+        popd
+
     - name: Run API tests
       run: |
         poetry run start
