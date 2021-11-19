@@ -48,4 +48,4 @@ jobs:
         poetry run nosetests-3.4 tests/test_web.py
         popd
 
-        portry run stop
+        poetry run stop
