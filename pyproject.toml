@@ -15,16 +15,15 @@ start_website = "bin.start_website:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-redis = "^3.5.3"
-hiredis = "^2.0.0"
+redis = {version = "^4.0.1", extras = ["hiredis"]}
 flask-restx = "^0.5.1"
 gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
-ipython = "^7.27.0"
+ipython = "^7.29.0"
 mypy = "^0.910"
-types-setuptools = "^57.0.2"
-types-redis = "^3.5.8"
+types-setuptools = "^57.4.2"
+types-redis = "^3.5.17"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
