@@ -37,7 +37,8 @@ def shutdown_cache(storage_directory: Optional[Path]=None):
         storage_directory = get_homedir()
     socket_path = get_socket_path('cache')
     r = Redis(unix_socket_path=socket_path)
-    r.shutdown(save=True)
+    r.save()
+    r.shutdown()
     print('Redis cache database shutdown.')
 
 
