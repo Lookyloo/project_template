@@ -1,4 +1,4 @@
-# Generic Template
+# Project Template
 
 This is a simple template used in all the web based tools in this repository, and a few others.
 
