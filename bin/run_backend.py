@@ -35,7 +35,10 @@ def launch_cache(storage_directory: Optional[Path]=None):
 def shutdown_cache(storage_directory: Optional[Path]=None):
     if not storage_directory:
         storage_directory = get_homedir()
-    Popen(["./shutdown_redis.sh"], cwd=(storage_directory / 'cache'))
+    socket_path = get_socket_path('cache')
+    r = Redis(unix_socket_path=socket_path)
+    r.shutdown(save=True)
+    print('Redis cache database shutdown.')
 
 
 def launch_all():
