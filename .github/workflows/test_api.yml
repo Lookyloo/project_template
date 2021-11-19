@@ -45,7 +45,7 @@ jobs:
         git clone https://github.com/Lookyloo/pyproject_template.git
         pushd pyproject_template
         poetry install
-        poetry run nosetests-3.4 tests/test_web.py
+        poetry run pytest tests/test_web.py
         popd
 
         poetry run stop
