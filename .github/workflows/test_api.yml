@@ -1,0 +1,40 @@
+name: Python application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+    name: Python ${{ matrix.python-version }} sample
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{matrix.python-version}}
+
+    - name: Install with poetry
+      run: |
+        python -m pip install --upgrade pip poetry
+        poetry install
+
+    - name: Run API tests
+      run: |
+        poetry run start
+
+        git clone https://github.com/Lookyloo/pyproject_template.git
+        pushd pyproject_template
+        poetry install
+        poetry run nosetests-3.4 tests/test_web.py
+        popd
+
+        portry run stop
