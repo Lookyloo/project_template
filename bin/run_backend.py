@@ -6,7 +6,7 @@ import os
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import List, Optional, Union
+from typing import Optional, Dict
 
 from redis import Redis
 from redis.exceptions import ConnectionError
@@ -35,10 +35,8 @@ def launch_cache(storage_directory: Optional[Path]=None):
 def shutdown_cache(storage_directory: Optional[Path]=None):
     if not storage_directory:
         storage_directory = get_homedir()
-    socket_path = get_socket_path('cache')
-    r = Redis(unix_socket_path=socket_path)
-    r.save()
-    r.shutdown()
+    r = Redis(unix_socket_path=get_socket_path('cache'))
+    r.shutdown(save=True)
     print('Redis cache database shutdown.')
 
 
@@ -47,24 +45,24 @@ def launch_all():
 
 
 def check_all(stop: bool=False):
-    backends: List[List[Union[str, bool]]] = [['cache', False]]
+    backends: Dict[str, bool] = {'cache': False}
     while True:
-        for b in backends:
+        for db_name, status in backends.items():
             try:
-                b[1] = check_running(b[0])  # type: ignore
+                backends[db_name] = check_running(db_name)
             except Exception:
-                b[1] = False
+                backends[db_name] = False
         if stop:
-            if not any(b[1] for b in backends):
+            if not any(status for status in backends.keys()):
                 break
         else:
-            if all(b[1] for b in backends):
+            if all(status for status in backends.keys()):
                 break
-        for b in backends:
-            if not stop and not b[1]:
-                print(f"Waiting on {b[0]}")
-            if stop and b[1]:
-                print(f"Waiting on {b[0]}")
+        for db_name, status in backends.items():
+            if not stop and not status:
+                print(f"Waiting on {db_name}")
+            if stop and status:
+                print(f"Waiting on {db_name}")
         time.sleep(1)
 
 
