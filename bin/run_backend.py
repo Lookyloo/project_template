@@ -47,22 +47,22 @@ def launch_all():
 def check_all(stop: bool=False):
     backends: Dict[str, bool] = {'cache': False}
     while True:
-        for db_name, status in backends.items():
+        for db_name in backends.keys():
             try:
                 backends[db_name] = check_running(db_name)
             except Exception:
                 backends[db_name] = False
         if stop:
-            if not any(status for status in backends.keys()):
+            if not any(running for running in backends.values()):
                 break
         else:
-            if all(status for status in backends.keys()):
+            if all(running for running in backends.values()):
                 break
-        for db_name, status in backends.items():
-            if not stop and not status:
-                print(f"Waiting on {db_name}")
-            if stop and status:
-                print(f"Waiting on {db_name}")
+        for db_name, running in backends.items():
+            if not stop and not running:
+                print(f"Waiting on {db_name} to start")
+            if stop and running:
+                print(f"Waiting on {db_name} to stop")
         time.sleep(1)
 
 
