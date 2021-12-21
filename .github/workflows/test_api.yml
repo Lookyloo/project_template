@@ -52,6 +52,6 @@ jobs:
 
     - name: Test update script
       run: |
-        poetry run update
+        poetry run update --yes
         sleep 30
         poetry run stop
