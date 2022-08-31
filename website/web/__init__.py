@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import pkg_resources
-
+from importlib.metadata import version
 from flask import Flask
 from flask_restx import Api, Resource  # type: ignore
 
@@ -18,7 +17,7 @@ app.config['SECRET_KEY'] = get_secret_key()
 
 api = Api(app, title='Project API',
           description='API to query a the project.',
-          version=pkg_resources.get_distribution('project').version)
+          version=version('project'))
 
 project: ProjectName = ProjectName()
 
