@@ -17,7 +17,7 @@ start_website = "bin.start_website:main"
 python = "^3.8"
 redis = {version = "^4.5.1", extras = ["hiredis"]}
 flask-restx = "^1.0.6"
-werkzeug = "^2.2.2"
+werkzeug = "^2.2.3"
 gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
