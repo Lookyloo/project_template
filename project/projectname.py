@@ -18,8 +18,8 @@ class ProjectName():
                                                          path=get_socket_path('cache'), decode_responses=True)
 
     @property
-    def redis(self):
+    def redis(self) -> Redis:  # type: ignore[type-arg]
         return Redis(connection_pool=self.redis_pool)
 
-    def check_redis_up(self):
+    def check_redis_up(self) -> bool:
         return self.redis.ping()

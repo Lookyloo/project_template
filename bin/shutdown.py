@@ -5,7 +5,7 @@ import time
 from project.default import AbstractManager
 
 
-def main():
+def main() -> None:
     AbstractManager.force_shutdown()
     time.sleep(5)
     while True:

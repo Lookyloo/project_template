@@ -24,7 +24,7 @@ project: ProjectName = ProjectName()
 
 @api.route('/redis_up')
 @api.doc(description='Check if redis is up and running')
-class RedisUp(Resource):
+class RedisUp(Resource):  # type: ignore[misc]
 
-    def get(self):
+    def get(self) -> bool:
         return project.check_redis_up()
