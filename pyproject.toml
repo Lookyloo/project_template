@@ -26,6 +26,7 @@ psutil = "^6.0.0"
 ipython = "^8.26.0"
 mypy = "^1.11.1"
 types-redis = "^4.6.0.20240806"
+types-psutil = "^6.0.0.20240621"
 
 [build-system]
 requires = ["poetry-core"]

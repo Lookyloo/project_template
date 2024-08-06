@@ -45,13 +45,13 @@ files = [
 
 [[package]]
 name = "attrs"
-version = "24.1.0"
+version = "24.2.0"
 description = "Classes Without Boilerplate"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "attrs-24.1.0-py3-none-any.whl", hash = "sha256:377b47448cb61fea38533f671fba0d0f8a96fd58facd4dc518e3dac9dbea0905"},
-    {file = "attrs-24.1.0.tar.gz", hash = "sha256:adbdec84af72d38be7628e353a09b6a6790d15cd71819f6e9d7b0faa8a125745"},
+    {file = "attrs-24.2.0-py3-none-any.whl", hash = "sha256:81921eb96de3191c8258c199618104dd27ac608d9366f5e35d011eae1867ede2"},
+    {file = "attrs-24.2.0.tar.gz", hash = "sha256:5cfb1b9148b5b086569baec03f20d7b6bf3bcacc9a42bebf87ffaaca362f6346"},
 ]
 
 [package.extras]
@@ -1057,6 +1057,17 @@ files = [
 types-setuptools = "*"
 
 [[package]]
+name = "types-psutil"
+version = "6.0.0.20240621"
+description = "Typing stubs for psutil"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-psutil-6.0.0.20240621.tar.gz", hash = "sha256:1be027326c42ff51ebd65255a5146f9dc57e5cf8c4f9519a88b3f3f6a7fcd00e"},
+    {file = "types_psutil-6.0.0.20240621-py3-none-any.whl", hash = "sha256:b02f05d2c4141cd5926d82d8b56e4292a4d8f483d8a3400b73edf153834a3c64"},
+]
+
+[[package]]
 name = "types-pyopenssl"
 version = "24.1.0.20240722"
 description = "Typing stubs for pyOpenSSL"
@@ -1139,4 +1150,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "fe0a07240a4b048684a6fc2635ce382d07bc37772bfea66f503bce68ab3282d3"
+content-hash = "558e5ef3c1692e4689faf2c562da5bf62195c0e1466e2842f109d4bf0996d4f1"
