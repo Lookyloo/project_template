@@ -12,7 +12,7 @@ def main() -> None:
         try:
             running = AbstractManager.is_running()
         except FileNotFoundError:
-            print('Redis is already down.')
+            print('Valkey is already down.')
             break
         if not running:
             break

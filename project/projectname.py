@@ -2,8 +2,8 @@
 
 import logging
 
-from redis import ConnectionPool, Redis
-from redis.connection import UnixDomainSocketConnection
+from valkey import ConnectionPool, Valkey
+from valkey.connection import UnixDomainSocketConnection
 
 from .default import get_config, get_socket_path
 
@@ -14,12 +14,12 @@ class ProjectName():
         self.logger = logging.getLogger(f'{self.__class__.__name__}')
         self.logger.setLevel(get_config('generic', 'loglevel'))
 
-        self.redis_pool: ConnectionPool = ConnectionPool(connection_class=UnixDomainSocketConnection,
-                                                         path=get_socket_path('cache'), decode_responses=True)
+        self.valkey_pool: ConnectionPool = ConnectionPool(connection_class=UnixDomainSocketConnection,
+                                                          path=get_socket_path('cache'), decode_responses=True)
 
     @property
-    def redis(self) -> Redis:  # type: ignore[type-arg]
-        return Redis(connection_pool=self.redis_pool)
+    def valkey(self) -> Valkey:
+        return Valkey(connection_pool=self.valkey_pool)
 
-    def check_redis_up(self) -> bool:
-        return self.redis.ping()
+    def check_valkey_up(self) -> bool:
+        return self.valkey.ping()  # type: ignore[return-value]

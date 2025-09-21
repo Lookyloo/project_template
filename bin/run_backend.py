@@ -7,10 +7,9 @@ import os
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional, Dict
 
-from redis import Redis
-from redis.exceptions import ConnectionError
+from valkey import Valkey
+from valkey.exceptions import ConnectionError
 
 from project.default import get_homedir, get_socket_path
 
@@ -20,7 +19,7 @@ def check_running(name: str) -> bool:
     if not os.path.exists(socket_path):
         return False
     try:
-        r = Redis(unix_socket_path=socket_path)
+        r = Valkey(unix_socket_path=socket_path)
         return True if r.ping() else False
     except ConnectionError:
         return False
@@ -30,15 +29,15 @@ def launch_cache(storage_directory: Path | None=None) -> None:
     if not storage_directory:
         storage_directory = get_homedir()
     if not check_running('cache'):
-        Popen(["./run_redis.sh"], cwd=(storage_directory / 'cache'))
+        Popen(["./run_valkey.sh"], cwd=(storage_directory / 'cache'))
 
 
 def shutdown_cache(storage_directory: Path | None=None) -> None:
     if not storage_directory:
         storage_directory = get_homedir()
-    r = Redis(unix_socket_path=get_socket_path('cache'))
+    r = Valkey(unix_socket_path=get_socket_path('cache'))
     r.shutdown(save=True)
-    print('Redis cache database shutdown.')
+    print('Valkey cache database shutdown.')
 
 
 def launch_all() -> None:

@@ -9,7 +9,7 @@ import time
 from subprocess import Popen
 
 from psutil import Process
-from redis import Redis
+from valkey import Valkey
 
 from project.default import get_homedir, get_socket_path, AbstractManager
 
@@ -30,7 +30,7 @@ def main() -> None:
         try:
             print(AbstractManager.is_running())
         except FileNotFoundError:
-            print('Redis is down.')
+            print('Valkey is down.')
     else:
         # we need to keep the cmdline for the restart
         # And if it doesn't exist, we want to inform the user.
@@ -43,7 +43,7 @@ def main() -> None:
             to_restart = []
 
         print(f'Request {args.script} to {args.action}...')
-        r = Redis(unix_socket_path=get_socket_path('cache'), db=1)
+        r = Valkey(unix_socket_path=get_socket_path('cache'), db=1)
         r.sadd('shutdown_manual', args.script)
         while r.zscore('running', args.script) is not None:
             print(f'Wait for {args.script} to stop...')

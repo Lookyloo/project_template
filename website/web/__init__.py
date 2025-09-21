@@ -27,4 +27,4 @@ project: ProjectName = ProjectName()
 class RedisUp(Resource):  # type: ignore[misc]
 
     def get(self) -> bool:
-        return project.check_redis_up()
+        return project.check_valkey_up()

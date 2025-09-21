@@ -12,8 +12,8 @@ from abc import ABC
 from datetime import datetime, timedelta
 from subprocess import Popen
 
-from redis import Redis
-from redis.exceptions import ConnectionError as RedisConnectionError
+from valkey import Valkey
+from valkey.exceptions import ConnectionError as ValkeyConnectionError
 
 from .helpers import get_socket_path, get_config
 
@@ -28,63 +28,63 @@ class AbstractManager(ABC):
         self.logger.setLevel(self.loglevel)
         self.logger.info(f'Initializing {self.__class__.__name__}')
         self.process: Popen | None = None  # type: ignore[type-arg]
-        self.__redis = Redis(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
+        self.__valkey = Valkey(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
 
         self.force_stop = False
 
     @staticmethod
     def is_running() -> list[tuple[str, float, set[str]]]:
         try:
-            r = Redis(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
+            r = Valkey(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
             running_scripts: dict[str, set[str]] = {}
-            for script_name, score in r.zrangebyscore('running', '-inf', '+inf', withscores=True):
-                for pid in r.smembers(f'service|{script_name}'):
+            for script_name, score in r.zrangebyscore('running', '-inf', '+inf', withscores=True):  # type: ignore[union-attr]
+                for pid in r.smembers(f'service|{script_name}'):  # type: ignore[union-attr]
                     try:
                         os.kill(int(pid), 0)
                     except OSError:
                         print(f'Got a dead script: {script_name} - {pid}')
                         r.srem(f'service|{script_name}', pid)
-                        other_same_services = r.scard(f'service|{script_name}')
+                        other_same_services: int = r.scard(f'service|{script_name}')  # type: ignore[assignment]
                         if other_same_services:
-                            r.zadd('running', {script_name: other_same_services})
+                            r.zadd('running', mapping={script_name: other_same_services})
                         else:
                             r.zrem('running', script_name)
-                running_scripts[script_name] = r.smembers(f'service|{script_name}')
-            return [(name, rank, running_scripts[name] if name in running_scripts else set()) for name, rank in r.zrangebyscore('running', '-inf', '+inf', withscores=True)]
-        except RedisConnectionError:
-            print('Unable to connect to redis, the system is down.')
+                running_scripts[script_name] = r.smembers(f'service|{script_name}')  # type: ignore[assignment]
+            return [(name, rank, running_scripts[name] if name in running_scripts else set()) for name, rank in r.zrangebyscore('running', '-inf', '+inf', withscores=True)]  # type: ignore[union-attr]
+        except ValkeyConnectionError:
+            print('Unable to connect to valkey, the system is down.')
             return []
 
     @staticmethod
     def clear_running() -> None:
         try:
-            r = Redis(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
+            r = Valkey(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
             r.delete('running')
-        except RedisConnectionError:
-            print('Unable to connect to redis, the system is down.')
+        except ValkeyConnectionError:
+            print('Unable to connect to valkey, the system is down.')
 
     @staticmethod
     def force_shutdown() -> None:
         try:
-            r = Redis(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
+            r = Valkey(unix_socket_path=get_socket_path('cache'), db=1, decode_responses=True)
             r.set('shutdown', 1)
-        except RedisConnectionError:
-            print('Unable to connect to redis, the system is down.')
+        except ValkeyConnectionError:
+            print('Unable to connect to valkey, the system is down.')
 
     def set_running(self, number: int | None=None) -> None:
         if number == 0:
-            self.__redis.zrem('running', self.script_name)
+            self.__valkey.zrem('running', self.script_name)
         else:
             if number is None:
-                self.__redis.zincrby('running', 1, self.script_name)
+                self.__valkey.zincrby('running', 1, self.script_name)
             else:
-                self.__redis.zadd('running', {self.script_name: number})
-            self.__redis.sadd(f'service|{self.script_name}', os.getpid())
+                self.__valkey.zadd('running', {self.script_name: number})
+            self.__valkey.sadd(f'service|{self.script_name}', os.getpid())
 
     def unset_running(self) -> None:
-        current_running = self.__redis.zincrby('running', -1, self.script_name)
+        current_running: int = self.__valkey.zincrby('running', -1, self.script_name)  # type: ignore[assignment]
         if int(current_running) <= 0:
-            self.__redis.zrem('running', self.script_name)
+            self.__valkey.zrem('running', self.script_name)
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int=10) -> bool:
         shutdown_check = min(sleep_in_sec, shutdown_check)
@@ -106,11 +106,11 @@ class AbstractManager(ABC):
 
     def shutdown_requested(self) -> bool:
         try:
-            return (bool(self.__redis.exists('shutdown'))
-                    or bool(self.__redis.sismember('shutdown_manual', self.script_name)))
+            return (bool(self.__valkey.exists('shutdown'))
+                    or bool(self.__valkey.sismember('shutdown_manual', self.script_name)))
         except ConnectionRefusedError:
             return True
-        except RedisConnectionError:
+        except ValkeyConnectionError:
             return True
 
     def _to_run_forever(self) -> None:
